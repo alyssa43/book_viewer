@@ -7,13 +7,31 @@ before do
 end
 
 helpers do
-
   def in_paragraphs(text) # view helper
     text.split("\n\n").map do |paragraph|
       "<p>#{paragraph}</p>"
     end.join
   end
+end
 
+def each_chapter # calls the block for each chapter, passing that chapters number, name and contents
+  @contents.each_with_index do |name, index|
+    number = index + 1
+    contents = File.read("data/chp#{number}.txt")
+    yield number, name, contents
+  end
+end
+
+def chapters_matching(query)
+  results = []
+
+  return results if !query || query.empty?
+
+  each_chapter do |number, name, contents|
+    results << {number: number, name: name} if contents.include?(query)
+  end
+
+  results
 end
 
 get "/" do
@@ -34,6 +52,11 @@ get "/chapters/:number" do
   @chapter = File.read("data/chp#{number}.txt")
 
   erb :chapter
+end
+
+get "/search" do
+  @results = chapters_matching(params[:query])
+  erb :search
 end
 
 not_found do
