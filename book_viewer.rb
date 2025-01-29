@@ -8,12 +8,12 @@ end
 
 helpers do
 
-  def in_paragraphs(text)
+  def in_paragraphs(text) # view helper
     text.split("\n\n").map do |paragraph|
       "<p>#{paragraph}</p>"
     end.join
   end
-  
+
 end
 
 get "/" do
@@ -34,4 +34,8 @@ get "/chapters/:number" do
   @chapter = File.read("data/chp#{number}.txt")
 
   erb :chapter
+end
+
+not_found do
+  redirect "/"
 end
